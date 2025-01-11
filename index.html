@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODEOWNERS Filter Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #4caf50;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+        }
+
+        textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .output {
+            height: 100px;
+            resize: none;
+        }
+
+        .message {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .message.error {
+            color: #e74c3c;
+        }
+
+        .message.success {
+            color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👑 CODEOWNERS 👑 Filter 👑 Generator 👑</h1>
+
+        <textarea id="codeowners" placeholder="Paste CODEOWNERS content here..." oninput="populateTeams()"></textarea>
+        <select id="teamName">
+            <option value="" disabled selected>Select a team</option>
+        </select>
+        <button onclick="generateFilter()">Generate Filter</button>
+        <textarea id="output" class="output" readonly placeholder="Generated filter will appear here..."></textarea>
+        <button onclick="copyOutput()">Copy to Clipboard</button>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        // Load saved values from localStorage on page load
+        window.onload = function() {
+            const savedCodeowners = localStorage.getItem('codeownersContent');
+            const savedTeamName = localStorage.getItem('teamName');
+
+            if (savedCodeowners) {
+                document.getElementById('codeowners').value = savedCodeowners;
+                populateTeams();
+            }
+
+            if (savedTeamName) {
+                document.getElementById('teamName').value = savedTeamName;
+            }
+        };
+
+        function populateTeams() {
+            const codeownersContent = document.getElementById('codeowners').value;
+            const teamSelect = document.getElementById('teamName');
+            const teams = new Set();
+
+            codeownersContent.split('\n').forEach(line => {
+                const parts = line.trim().split(/\s+/);
+                if (parts.length > 1) {
+                    const lineTeams = parts.slice(1).filter(part => part.startsWith('@'));
+                    lineTeams.forEach(team => teams.add(team));
+                }
+            });
+
+            teamSelect.innerHTML = '<option value="" disabled selected>Select a team</option>';
+            teams.forEach(team => {
+                const option = document.createElement('option');
+                option.value = team;
+                option.textContent = team;
+                teamSelect.appendChild(option);
+            });
+        }
+
+        function generateFilter() {
+            const codeownersContent = document.getElementById('codeowners').value;
+            const teamName = document.getElementById('teamName').value;
+            const outputField = document.getElementById('output');
+            const messageDiv = document.getElementById('message');
+
+            // Save values to localStorage
+            localStorage.setItem('codeownersContent', codeownersContent);
+            localStorage.setItem('teamName', teamName);
+
+            if (!codeownersContent || !teamName) {
+                messageDiv.textContent = 'Please provide CODEOWNERS content and select a team.';
+                messageDiv.className = 'message error';
+                return;
+            }
+
+            const lines = codeownersContent.split('\n');
+            const paths = [];
+
+            lines.forEach(line => {
+                if (line.includes(teamName)) {
+                    const path = line.split(/\s+/)[0];
+                    if (!path.includes('.')) {
+                        paths.push(path.replace(/^\//, ''));
+                    }
+                    
+                }
+            });
+
+            if (paths.length) {
+                outputField.value = paths.join(',');
+                messageDiv.textContent = 'Filter generated successfully!';
+                messageDiv.className = 'message success';
+            } else {
+                outputField.value = '';
+                messageDiv.textContent = `No valid paths found for team: ${teamName}`;
+                messageDiv.className = 'message error';
+            }
+        }
+
+        function populateTeamAndGenerateFilter() {
+            populateTeams();
+            generateFilter();
+        }
+
+        function copyOutput() {
+            const outputField = document.getElementById('output');
+            const messageDiv = document.getElementById('message');
+
+            if (outputField.value) {
+                outputField.select();
+                document.execCommand('copy');
+                messageDiv.textContent = 'Output copied to clipboard!';
+                messageDiv.className = 'message success';
+            } else {
+                messageDiv.textContent = 'No output to copy.';
+                messageDiv.className = 'message error';
+            }
+        }
+    </script>
+</body>
+</html>
