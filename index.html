@@ -1,187 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>CODEOWNERS Filter Generator</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f9;
-        color: #333;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        flex-direction: column;
-      }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
 
-      h1 {
-        color: #4caf50;
-        margin-bottom: 20px;
-        font-size: 24px;
-      }
+        h1 {
+            color: #4caf50;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
 
-      .container {
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        width: 90%;
-        max-width: 600px;
-      }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+        }
 
-      select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-family: monospace;
-      }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: monospace;
+        }
 
-      textarea {
-        min-height: 100px;
-        width: 100%;
-        font-family: monospace;
-        margin-bottom: 5px;
-      }
+        textarea {
+            min-height: 100px;
+            width: 100%;
+            font-family: monospace;
+            margin-bottom: 5px;
+        }
 
-      .output {
-        height: 100px;
-        resize: none;
-      }
+        .output {
+            height: 100px;
+            resize: none;
+        }
 
-      .copy {
-        padding: 5px;
-        background-color: transparent;
-        font-size: 12px;
-        border: 1px solid #45a049;
-        color: #45a049;
-        cursor: pointer;
-      }
+        .copy {
+            padding: 5px;
+            background-color: transparent;
+            font-size: 12px;
+            border: 1px solid #45a049;
+            color: #45a049;
+            cursor: pointer;
+        }
 
-      .message {
-        font-size: 14px;
-        margin-top: 10px;
-      }
-
-      .message.error {
-        color: #e74c3c;
-      }
-
-      .message.success {
-        color: #2ecc71;
-      }
+        .message {
+            font-size: 14px;
+            margin-top: 10px;
+        }
     </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>👑 CODEOWNERS Filter Generator 👑</h1>
-      <p>
+</head>
+<body>
+<div class="container">
+    <h1>👑 CODEOWNERS  👑</h1>
+    <h2>Filter/Scope generator</h2>
+    <p>
         Having trouble finding the files your team owns in your CODEOWNERS file?
         Or wanna be scared by the number of paths your team owns 😱? Paste the
         CODEOWNER content below, and it will generate search filters for VSCode
         and scope configration for IDEA IDEs.
-      </p>
+    </p>
 
-      <textarea
-        id="codeowners"
-        aria-label="CODEOWNERS content"
-        placeholder="Paste CODEOWNERS content here..."
-        oninput="handleCodeownersInput()"
-      ></textarea>
-      <div id="message" class="message" role="alert"></div>
-      <div id="result" hidden="true">
+    <textarea
+            id="codeowners"
+            aria-label="CODEOWNERS content"
+            placeholder="Paste CODEOWNERS content here..."
+            oninput="handleCodeownersInput()"
+    ></textarea>
+    <div id="message" class="message" role="alert"></div>
+    <div id="result" hidden="true">
         <select
-          id="teamName"
-          aria-label="Team name"
-          onchange="generateFilter()"
+                id="teamName"
+                aria-label="Team name"
+                onchange="generateFilter()"
         ></select>
         <p id="teamStats"></p>
         <p>
-          <label for="output"><strong>Filter for VSCode search:</strong></label>
-          <textarea
-            id="output"
-            class="output"
-            aria-label="VSCode filter output"
-            readonly
-            placeholder="Generated VSCode filter will appear here..."
-          ></textarea>
-          <button id="outputCopy" class="copy" onclick="copyOutput()">
-            Copy to Clipboard
-          </button>
+            <label for="output"><strong>Filter for VSCode search:</strong></label>
+            <textarea
+                    id="output"
+                    class="output"
+                    aria-label="VSCode filter output"
+                    readonly
+                    placeholder="Generated VSCode filter will appear here..."
+            ></textarea>
+            <button id="outputCopy" class="copy" onclick="copyOutput()">
+                Copy to Clipboard
+            </button>
         </p>
         <p>
-          <label for="outputScope"
+            <label for="outputScope"
             ><strong>Filter for IDEA Scope:</strong></label
-          >
-          <textarea
-            id="outputScope"
-            class="output"
-            aria-label="Scope filter for IDEA IDEs"
-            readonly
-            placeholder="Generated IDEA Scope filter will appear here..."
-          ></textarea>
-          <button id="outputScopeCopy" class="copy" onclick="copyOutputScope()">
-            Copy to Clipboard
-          </button>
+            >
+            <textarea
+                    id="outputScope"
+                    class="output"
+                    aria-label="Scope filter for IDEA IDEs"
+                    readonly
+                    placeholder="Generated IDEA Scope filter will appear here..."
+            ></textarea>
+            <button id="outputScopeCopy" class="copy" onclick="copyOutputScope()">
+                Copy to Clipboard
+            </button>
         </p>
-      </div>
     </div>
+</div>
 
-    <script>
-      // Load saved values from localStorage on page load
-      window.onload = function () {
+<script>
+    // Load saved values from localStorage on page load
+    window.onload = function () {
         const savedCodeowners = localStorage.getItem("codeownersContent");
-        const savedTeam = localStorage.getItem("codeownersTeam");
         if (savedCodeowners) {
-          document.getElementById("codeowners").value = savedCodeowners;
-          handleCodeownersInput();
+            document.getElementById("codeowners").value = savedCodeowners;
+            handleCodeownersInput();
         }
-      };
+    };
 
-      function handleCodeownersInput() {
+    function handleCodeownersInput() {
         const codeownersContent = document.getElementById("codeowners").value;
         const teamSelect = document.getElementById("teamName");
         const teams = new Set();
 
         localStorage.setItem("codeownersContent", codeownersContent);
 
-        codeownersContent.split("\n").forEach((line) => {
-          const parts = line.trim().split(/\s+/);
-          if (parts.length > 1) {
-            const lineTeams = parts
-              .slice(1)
-              .filter((part) => part.startsWith("@"));
-            lineTeams.forEach((team) => teams.add(team));
-          }
+        codeownersContent.split("\n").forEach(line => {
+            const lineTeams = line.trim().split(/\s+/).slice(1).filter(part => part.startsWith("@"));
+            lineTeams.forEach(team => teams.add(team));
         });
 
-        teamSelect.innerHTML = "";
-        teams.forEach((team) => {
-          const option = document.createElement("option");
-          option.value = team;
-          option.textContent = team;
-          teamSelect.appendChild(option);
-        });
+        teamSelect.innerHTML = Array.from(teams).sort().map(team => `<option value="${team}">${team}</option>`).join("");
 
         if (teams.size > 0) {
-          const savedTeam = localStorage.getItem("codeownersTeam");
-          if (savedTeam) {
-            teamSelect.value = savedTeam;
-            generateFilter();
-          } else {
-            const firstTeam = [...teams][0];
-            teamSelect.value = firstTeam;
-            generateFilter();
-          }
+            const savedTeam = localStorage.getItem("codeownersTeam");
+            if (savedTeam) {
+                teamSelect.value = savedTeam;
+                generateFilter();
+            } else {
+                const firstTeam = [...teams][0];
+                teamSelect.value = firstTeam;
+                generateFilter();
+            }
         }
-      }
+    }
 
-      function generateFilter() {
+    function generateFilter() {
         const codeownersContent = document.getElementById("codeowners").value;
         const teamName = document.getElementById("teamName").value;
         localStorage.setItem("codeownersTeam", teamName);
@@ -190,61 +171,61 @@
         const messageDiv = document.getElementById("message");
 
         if (!codeownersContent || !teamName) {
-          messageDiv.textContent =
-            "Please provide CODEOWNERS content and select a team.";
-          messageDiv.className = "message error";
-          return;
+            messageDiv.textContent =
+                "Please provide CODEOWNERS content and select a team.";
+            messageDiv.className = "message error";
+            return;
         }
 
-        const lines = codeownersContent.split("\n");
-        const paths = [];
-
-        lines.forEach((line) => {
-          if (line.includes(teamName)) {
-            const path = line.split(/\s+/)[0];
-            if (!path.includes(".")) {
-              paths.push(path.replace(/^\//, ""));
-            }
-          }
-        });
+        const paths = codeownersContent.split("\n")
+            .filter(line => line.includes(teamName))
+            .map(line => line.split(/\s+/)[0].replace(/^\//, ""));
 
         if (paths.length) {
-          outputFieldScope.value = paths
-            .map((path) => `file:${path}//*`)
-            .join("||");
-          outputField.value = paths.join(",");
-          document.getElementById(
-            "teamStats"
-          ).textContent = `${teamName} owns ${paths.length} paths!`;
+            outputFieldScope.value = paths
+                .map((path) => {
+                    if (path.includes(".")) {
+                        return `file:${path}`;
+                    } else {
+                        return `file:${path}//*`
+                    }
+                })
+                .join("||");
+            outputField.value = paths.join(",");
+            document.getElementById(
+                "teamStats"
+            ).textContent = `${teamName} owns ${paths.length} paths!`;
 
-          document.getElementById("result").hidden = false;
-          messageDiv.hidden = true;
+            document.getElementById("result").hidden = false;
+            messageDiv.hidden = true;
         } else {
-          messageDiv.hidden = false;
-          messageDiv.textContent = `No valid paths found for team: ${teamName}`;
-          messageDiv.className = "message error";
+            messageDiv.hidden = false;
+            messageDiv.textContent = `No valid paths found for team: ${teamName}`;
+            messageDiv.className = "message error";
         }
-      }
+    }
 
-      function copyOutput() {
+    function copyOutput() {
         const outputField = document.getElementById("output");
         if (outputField.value) {
-          outputField.select();
-          document.execCommand("copy");
-          document.getElementById("outputCopy").textContent =
-            "Copied to clipboard!";
+            navigator.clipboard.writeText(outputField.value).then(() => {
+                document.getElementById("outputCopy").textContent = "Copied to clipboard!";
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
         }
-      }
+    }
 
-      function copyOutputScope() {
+    function copyOutputScope() {
         const outputFieldScope = document.getElementById("outputScope");
         if (outputFieldScope.value) {
-          outputFieldScope.select();
-          document.execCommand("copy");
-          document.getElementById("outputScopeCopy").textContent =
-            "Copied to clipboard!";
+            navigator.clipboard.writeText(outputFieldScope.value).then(() => {
+                document.getElementById("outputScopeCopy").textContent = "Copied to clipboard!";
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
         }
-      }
-    </script>
-  </body>
+    }
+</script>
+</body>
 </html>
