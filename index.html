@@ -74,9 +74,9 @@
     <h1>👑 CODEOWNERS  👑</h1>
     <h2>Filter/Scope generator</h2>
     <p>
-        Having trouble finding just the files your team owns according to the CODEOWNERS of your GitHub repository?
-        Or maybe you want to see, for better 🏆 or worse 😱, how many paths your team manages?
-        Paste the CODEOWNER content below, and it will generate search filters for VSCode
+        Having trouble finding the files your team owns in your CODEOWNERS file?
+        Or wanna be scared by the number of paths your team owns 😱? Paste the
+        CODEOWNER content below, and it will generate search filters for VSCode
         and scope configration for IDEA IDEs.
     </p>
 
@@ -119,6 +119,19 @@
                     placeholder="Generated IDEA Scope filter will appear here..."
             ></textarea>
             <button id="outputScopeCopy" class="copy" onclick="copyOutputScope()">
+                Copy to Clipboard
+            </button>
+        </p>
+        <p>
+            <label for="outputPaths"><strong>List of CODEOWNER paths:</strong></label>
+            <textarea
+                    id="outputPaths"
+                    class="output"
+                    aria-label="List of CODEOWNER paths"
+                    readonly
+                    placeholder="Generated list of CODEOWNER paths will appear here..."
+            ></textarea>
+            <button id="outputPathsCopy" class="copy" onclick="copyOutputPaths()">
                 Copy to Clipboard
             </button>
         </p>
@@ -168,6 +181,7 @@
         localStorage.setItem("codeownersTeam", teamName);
         const outputField = document.getElementById("output");
         const outputFieldScope = document.getElementById("outputScope");
+        const outputPathsField = document.getElementById("outputPaths");
         const messageDiv = document.getElementById("message");
 
         if (!codeownersContent || !teamName) {
@@ -192,6 +206,7 @@
                 })
                 .join("||");
             outputField.value = paths.join(",");
+            outputPathsField.value = paths.join("\n");
             document.getElementById(
                 "teamStats"
             ).textContent = `${teamName} owns ${paths.length} paths!`;
@@ -221,6 +236,17 @@
         if (outputFieldScope.value) {
             navigator.clipboard.writeText(outputFieldScope.value).then(() => {
                 document.getElementById("outputScopeCopy").textContent = "Copied to clipboard!";
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    }
+
+    function copyOutputPaths() {
+        const outputPathsField = document.getElementById("outputPaths");
+        if (outputPathsField.value) {
+            navigator.clipboard.writeText(outputPathsField.value).then(() => {
+                document.getElementById("outputPathsCopy").textContent = "Copied to clipboard!";
             }).catch(err => {
                 console.error('Failed to copy: ', err);
             });
